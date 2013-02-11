@@ -1,0 +1,16 @@
+name: XSpy
+version: 0.1
+description: Your personal spy against xray users
+author: cedeel
+main: be.darnell.xspy.XSpy
+softdepend: [LogBlock]
+commands:
+  xreport:
+    description: Check a single player's ore rates
+permissions:
+  xspy.check:
+    description: Allows getting reports about players.
+    default: false
+  xspy.notify:
+    description: Sends warnings when a player reaches a level where attention is required
+    default: false
