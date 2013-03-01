@@ -79,6 +79,21 @@ public final class XrayPlayer implements Comparable<XrayPlayer> {
 			xLevelUpdate = 0;
 		} else xLevelUpdate++;
 	}
+  
+  /**
+   * Remove a placed ore from the counter.
+   * @param ore  The type of ore to be removed.
+   */
+  public void removeOre(Ore ore) {
+    switch (ore) {
+      case STONE: xStone--; break;
+      case IRON: xIron--; break;
+      case GOLD: xGold--; break;
+      case DIAMOND: xDiamond--; break;
+      case EMERALD: xEmerald--; break;
+      case LAPIS: xLapis--; break;
+    }
+  }
 	
 	/**
 	 * Get a count of a tracked ore
@@ -122,7 +137,7 @@ public final class XrayPlayer implements Comparable<XrayPlayer> {
 	 * Get a total count of the ores that are tracked
 	 * @return The sum of tracked ores, including stone
 	 */
-	double getAll() {
+	public double getAll() {
 		return xStone + xIron + xGold + xDiamond + xEmerald + xLapis;
 	}
 	

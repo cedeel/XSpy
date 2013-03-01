@@ -63,4 +63,6 @@ public final class DummyBackend extends Backend {
 		return "DummyBackend";
 	}
 
+  @Override
+  public void persist() { /*  This is a dummy backend. Don't expect persisting!  */ }
 }

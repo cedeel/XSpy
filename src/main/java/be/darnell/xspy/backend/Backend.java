@@ -34,13 +34,17 @@ import be.darnell.xspy.XrayPlayer;
 
 public abstract class Backend {
 
-	protected final XSpy plugin;
-	protected Map<String, XrayPlayer> playerMap = new HashMap<String, XrayPlayer>();
-	
-	public abstract XrayPlayer getInfo(String suspect);
-	
-	public Backend(XSpy plugin) {
+  protected final XSpy plugin;
+  protected Map<String, XrayPlayer> playerMap = new HashMap<String, XrayPlayer>();
+  
+  public Backend(XSpy plugin) {
 		this.plugin = plugin;
 	}
+  
+	public abstract XrayPlayer getInfo(String suspect);
+  
+  public abstract void persist();
+	
+	
 
 }

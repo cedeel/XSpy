@@ -39,63 +39,125 @@ import de.diddiz.LogBlock.QueryParams;
 import de.diddiz.LogBlock.QueryParams.BlockChangeType;
 
 public class LogBlockBackend extends Backend {
-
-    private final LogBlock lb;
-
-    public LogBlockBackend(XSpy plugin) {
-        super(plugin);
-        final PluginManager pm = plugin.getServer().getPluginManager();
-        lb = (LogBlock) pm.getPlugin("LogBlock");
-    }
-
-    @Override
-    public XrayPlayer getInfo(String suspect) {
-        OfflinePlayer suspectPlayer = plugin.getServer().getOfflinePlayer(suspect);
-
-        if (!playerMap.containsKey(suspect)) {
-            XrayPlayer result = new XrayPlayer(suspectPlayer);
-
-            QueryParams params = new QueryParams(lb);
-            params.setPlayer(suspect);
-            params.bct = BlockChangeType.DESTROYED;
-            params.limit = -1;
-            params.since = -1;
-            params.needId = true;
-
-            try {
-                for (BlockChange bc : lb.getBlockChanges(params)) {
-                    switch (bc.replaced) {
-                        case 1:
-                            result.addOre(Ore.STONE);
-                            break;
-                        case 56:
-                            if (plugin.config.isActive(Ore.DIAMOND))
-                                result.addOre(Ore.DIAMOND);
-                            break;
-                        case 14:
-                            if (plugin.config.isActive(Ore.GOLD))
-                                result.addOre(Ore.GOLD);
-                            break;
-                        case 21:
-                            if (plugin.config.isActive(Ore.LAPIS))
-                                result.addOre(Ore.LAPIS);
-                            break;
-                        case 15:
-                            if (plugin.config.isActive(Ore.IRON))
-                                result.addOre(Ore.IRON);
-                            break;
-                        case 129:
-                            if (plugin.config.isActive(Ore.EMERALD))
-                                result.addOre(Ore.EMERALD);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } catch (Exception e) {
-            }
-            playerMap.put(suspect, result);
+  
+  private final LogBlock lb;
+  
+  public LogBlockBackend(XSpy plugin) {
+    super(plugin);
+    final PluginManager pm = plugin.getServer().getPluginManager();
+    lb = (LogBlock) pm.getPlugin("LogBlock");
+  }
+  
+  @Override
+  public XrayPlayer getInfo(String suspect) {
+    OfflinePlayer suspectPlayer = plugin.getServer().getOfflinePlayer(suspect);
+    
+    if (!playerMap.containsKey(suspect)) {
+      XrayPlayer result = new XrayPlayer(suspectPlayer);
+      int stones = 0, diamonds = 0, gold = 0, lapis = 0, iron = 0, emerald = 0;      
+      
+      QueryParams params = new QueryParams(lb);
+      params.setPlayer(suspect);
+      params.bct = BlockChangeType.DESTROYED;
+      params.limit = -1;
+      params.since = -1;
+      params.needId = true;
+      
+      try {
+        for (BlockChange bc : lb.getBlockChanges(params)) {
+          switch (bc.replaced) {
+            case 1:
+              stones++;
+              break;
+            case 56:
+              diamonds++;
+              break;
+            case 14:
+              gold++;
+              break;
+            case 21:
+              lapis++;
+              break;
+            case 15:
+              iron++;
+              break;
+            case 129:
+              emerald++;
+              break;
+            default:
+              break;
+          }
         }
-        return playerMap.get(suspect);
+      } catch (Exception e) {
+      }
+      
+      params = new QueryParams(lb);
+      params.setPlayer(suspect);
+      params.bct = BlockChangeType.CREATED;
+      params.limit = -1;
+      params.since = -1;
+      params.needId = true;
+      
+      try {
+        for (BlockChange bc : lb.getBlockChanges(params)) {
+          switch (bc.replaced) {
+            case 56:
+              diamonds--;
+              break;
+            case 14:
+              gold--;
+              break;
+            case 21:
+              lapis--;
+              break;
+            case 15:
+              iron--;
+              break;
+            case 129:
+              emerald--;
+              break;
+            default:
+              break;
+          }
+        }
+      } catch (Exception e) {
+      }
+      
+      for (int i = 0; i < stones; i++) {
+        result.addOre(Ore.STONE);
+      }
+      if(plugin.config.isActive(Ore.DIAMOND)) {
+        for(int i = 0; i < diamonds; i++) {
+          result.addOre(Ore.DIAMOND);
+        }
+      }
+      if(plugin.config.isActive(Ore.GOLD)) {
+        for(int i = 0; i < gold; i++) {
+          result.addOre(Ore.GOLD);
+        }
+      }
+      if(plugin.config.isActive(Ore.LAPIS)) {
+        for(int i = 0; i < lapis; i++) {
+          result.addOre(Ore.LAPIS);
+        }
+      }
+      if(plugin.config.isActive(Ore.IRON)) {
+        for(int i = 0; i < iron; i++) {
+          result.addOre(Ore.IRON);
+        }
+      }
+      if(plugin.config.isActive(Ore.EMERALD)) {
+        for(int i = 0; i < emerald; i++) {
+          result.addOre(Ore.EMERALD);
+        }
+      }
+      playerMap.put(suspect, result);
     }
+    return playerMap.get(suspect);
+  }
+
+  @Override
+  public void persist() {
+    // We let LogBlock do the persisting, so nothing to do here.
+  }
 }

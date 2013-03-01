@@ -28,17 +28,69 @@ package be.darnell.xspy.backend;
 
 import be.darnell.xspy.XSpy;
 import be.darnell.xspy.XrayPlayer;
+import java.io.File;
+import java.io.IOException;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FileBackend extends Backend {
-	
-	public FileBackend(XSpy plugin) {
-		super(plugin);
-	}
 
-	@Override
-	public XrayPlayer getInfo(String suspect) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  private static BackendListener listener;
 
+  public FileBackend(XSpy plugin) {
+    super(plugin);
+    listener = new BackendListener(plugin, this);
+  }
+
+  @Override
+  public XrayPlayer getInfo(String suspect) {
+    if (!playerMap.containsKey(suspect)) {
+      YamlConfiguration userConfig = loadUserConfig(suspect);
+      playerMap.put(suspect,
+              new XrayPlayer(Bukkit.getOfflinePlayer(suspect),
+                             userConfig.getInt(XrayPlayer.Ore.STONE.toString()),
+                             userConfig.getInt(XrayPlayer.Ore.IRON.toString()),
+                             userConfig.getInt(XrayPlayer.Ore.GOLD.toString()),
+                             userConfig.getInt(XrayPlayer.Ore.DIAMOND.toString()),
+                             userConfig.getInt(XrayPlayer.Ore.EMERALD.toString()),
+                             userConfig.getInt(XrayPlayer.Ore.LAPIS.toString())
+              )
+      );
+    }
+    return playerMap.get(suspect);
+  }
+
+  @Override
+  public void persist() {
+    for(String suspect : playerMap.keySet()) {
+      File configFile = new File(plugin.getDataFolder(), suspect + ".yml");
+      YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(configFile);
+      
+      XrayPlayer xp = playerMap.get(suspect);
+      
+      userConfig.set(XrayPlayer.Ore.STONE.toString(),
+              xp.getOre(XrayPlayer.Ore.STONE));
+      
+      userConfig.set(XrayPlayer.Ore.IRON.toString(),
+              xp.getOre(XrayPlayer.Ore.IRON));
+      
+      userConfig.set(XrayPlayer.Ore.GOLD.toString(),
+              xp.getOre(XrayPlayer.Ore.GOLD));
+      
+      userConfig.set(XrayPlayer.Ore.DIAMOND.toString(),
+              xp.getOre(XrayPlayer.Ore.DIAMOND));
+      
+      userConfig.set(XrayPlayer.Ore.EMERALD.toString(),
+              xp.getOre(XrayPlayer.Ore.EMERALD));
+      
+      try {
+        userConfig.save(configFile);
+      } catch(IOException e) {}
+    }
+  }
+
+  private YamlConfiguration loadUserConfig(String user) {
+    File configFile = new File(plugin.getDataFolder(), user + ".yml");
+    return YamlConfiguration.loadConfiguration(configFile);
+  }
 }

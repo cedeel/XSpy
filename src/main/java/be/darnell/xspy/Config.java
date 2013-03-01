@@ -105,11 +105,13 @@ public final class Config {
 	
 	public static enum XLevel {
 		WARNING {
+      @Override
 			public String toString() {
 				return "Warning Level";
 			}
 		},
 		SEVERE {
+      @Override
 			public String toString() {
 				return "Severe Level";
 			}

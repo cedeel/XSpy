@@ -34,13 +34,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import be.darnell.xspy.XSpy;
 import be.darnell.xspy.XrayPlayer;
 import be.darnell.xspy.XrayPlayer.Ore;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 public class BackendListener implements Listener {
 	
 	private static XSpy _Plugin;
 	private static Backend storage;
 	
-	public BackendListener(XSpy plugin, DummyBackend backend) {
+	public BackendListener(XSpy plugin, Backend backend) {
 		_Plugin = plugin;
 		storage = backend;
 	}
@@ -71,5 +72,28 @@ public class BackendListener implements Listener {
 			xp.addOre(Ore.EMERALD);
 		
 	}
+  
+  @EventHandler
+  public void onBlockPlace(BlockPlaceEvent event) {
+    String player = event.getPlayer().getName();
+		
+		XrayPlayer xp = storage.getInfo(player);
+		Material placed = event.getBlock().getType();
+		
+		if(_Plugin.config.isActive(Ore.DIAMOND) && placed == Material.DIAMOND_ORE)
+			xp.removeOre(Ore.DIAMOND);
+		
+		if(_Plugin.config.isActive(Ore.GOLD) && placed == Material.GOLD_ORE)
+			xp.removeOre(Ore.GOLD);
+		
+		if(_Plugin.config.isActive(Ore.LAPIS) && placed == Material.LAPIS_ORE)
+			xp.removeOre(Ore.LAPIS);
+		
+		if(_Plugin.config.isActive(Ore.IRON) && placed == Material.IRON_ORE)
+			xp.removeOre(Ore.IRON);
+		
+		if(_Plugin.config.isActive(Ore.EMERALD) && placed == Material.EMERALD_ORE)
+			xp.removeOre(Ore.EMERALD);
+  }
 
 }

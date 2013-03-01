@@ -41,4 +41,9 @@ public final class SQLBackend extends Backend {
 		return null;
 	}
 
+  @Override
+  public void persist() {
+    // TODO Auto-generated method stub
+  }
+
 }
